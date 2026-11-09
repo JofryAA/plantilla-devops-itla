@@ -8,6 +8,7 @@
     body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; }
     h1 { color: #1f3b63; } li.hecha { text-decoration: line-through; color: #777; }
     form { display: flex; gap: 8px; } input { flex: 1; padding: 8px; } button { padding: 8px 14px; }
+    li { cursor: pointer; margin: 6px 0; } li .eliminar { margin-left: 10px; padding: 2px 8px; }
   </style>
 </head>
 <body>
@@ -26,6 +27,14 @@
           const li = document.createElement('li'); li.textContent = t.titulo;
           if (t.completada) li.className = 'hecha';
           li.onclick = async () => { await fetch('/api/tareas/' + t.id, { method: 'PATCH' }); cargar(); };
+          const del = document.createElement('button');
+          del.textContent = 'Eliminar'; del.className = 'eliminar';
+          del.onclick = async ev => {
+            ev.stopPropagation(); // evita que el clic también marque la tarea como completada
+            await fetch('/api/tareas/' + t.id, { method: 'DELETE' });
+            cargar();
+          };
+          li.appendChild(del);
           l.appendChild(li);
         });
       } catch (e) { /* sin API: modo estático */ }
